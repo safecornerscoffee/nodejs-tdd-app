@@ -5,17 +5,35 @@ const newProduct = require('../data/new-product.json');
 
 productModel.create = jest.fn();
 
-describe('Product Controller', () => {
+let req, res, next;
+beforeEach(() => {
+    req = httpMocks.createRequest();
+    res = httpMocks.createResponse();
+    next = null;
+});
+
+describe('ProductController CreateService', () => {
+    beforeEach(() => {
+        req.body = newProduct;
+    });
     it('should have a createProduct function', () => {
         expect(typeof productController.createProduct).toBe('function');
     });
 
     it('should call Product.create', () => {
-        let req = httpMocks.createRequest();
-        let res = httpMocks.createResponse();
-        let next = null;
-        req.body = newProduct;
         productController.createProduct(req, res, next);
         expect(productModel.create).toBeCalledWith(newProduct);
+    });
+
+    it('should returning 201 status code', () => {
+        productController.createProduct(req, res, next);
+        expect(res.statusCode).toBe(201);
+        expect(res._isEndCalled()).toBeTruthy();
+    });
+
+    it('should returning json in response body', () => {
+        productModel.create.mockReturnValue(newProduct);
+        productController.createProduct(req, res, next);
+        expect(res._getJSONData()).toStrictEqual(newProduct);
     });
 });
