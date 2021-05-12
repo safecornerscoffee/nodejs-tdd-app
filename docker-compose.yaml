@@ -4,16 +4,16 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: "mongo"
-      MONGO_INITDB_ROOT_PASSWORD: "mongo"
-      MONGO_INITDB_DATABASE: "mongo"
+      MONGO_INITDB_ROOT_USERNAME: "coffee"
+      MONGO_INITDB_ROOT_PASSWORD: "coffee"
+      MONGO_INITDB_DATABASE: "coffee"
     ports:
       - "27017:27017"
   mongo-express:
     image: mongo-express
     restart: always
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: "mongo"
-      ME_CONFIG_MONGODB_ADMINPASSWORD: "mongo"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: "coffee"
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "coffee"
     ports:
       - "8081:8081"

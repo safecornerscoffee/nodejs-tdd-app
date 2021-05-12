@@ -4,6 +4,15 @@ const PORT = 5000;
 
 const app = express();
 const productRoutes = require('./routes');
+const mongoose = require('mongoose');
+mongoose
+    .connect('mongodb://coffee:coffee@localhost:27017/coffee', {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        authSource: 'admin',
+    })
+    .then(() => console.log(`MongoDB Connected`))
+    .catch((err) => console.log(err));
 
 app.use(express.json());
 
