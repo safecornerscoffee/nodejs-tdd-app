@@ -72,3 +72,11 @@ mockFunction()
 expect(mockFunction).toBeCalledWith('hello')
 expect(mockFunction).toBeCalledTimes(2)
 ```
+### Change Target Environment
+jest.config.js
+```js
+module.exports = {
+    testEnvironment: "node"
+}
+```
+replace target environment js-dom with node, avoiding mongoose issues.
