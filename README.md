@@ -49,6 +49,26 @@ The first argument is the singular name of the collection your model is for. Mon
 ### it(name, fn, timeout)
 ### expect
 ### matcher
-### beforeEach
+### jest.fn()
+#### Create mock function
+```javascript
+const mockFunction = jest.fn()
+```
+#### Call mock function
+```javascript
+mockFunction()
+mockFunction('hello')
+```
+#### Set return value
+```javascript
+mockFunction.mockReturnValue("hello, mock")
+console.log(mockFunction())
+```
+#### Validate
+```javascript
+mockFunction('hello')
+mockFunction()
 
-> 
+expect(mockFunction).toBeCalledWith('hello')
+expect(mockFunction).toBeCalledTimes(2)
+```
