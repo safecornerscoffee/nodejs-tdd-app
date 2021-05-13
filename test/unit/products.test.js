@@ -6,7 +6,9 @@ const allProducts = require('../data/all-products.json');
 
 productModel.create = jest.fn();
 productModel.find = jest.fn();
+productModel.findById = jest.fn();
 
+const productId = 'asdf';
 let req, res, next;
 beforeEach(() => {
     req = httpMocks.createRequest();
@@ -14,7 +16,7 @@ beforeEach(() => {
     next = jest.fn();
 });
 
-describe('ProductController create Function', () => {
+describe('ProductController.create Function', () => {
     beforeEach(() => {
         req.body = newProduct;
     });
@@ -51,10 +53,11 @@ describe('ProductController create Function', () => {
     });
 });
 
-describe('ProductController Get Function', () => {
+describe('ProductController.getProducts Function', () => {
     it('should have a getProducts function', () => {
         expect(typeof productController.getProducts).toBe('function');
     });
+
     it('should call Product.find({})', async () => {
         await productController.getProducts(req, res, next);
         expect(productModel.find).toHaveBeenCalledWith({});
@@ -65,17 +68,52 @@ describe('ProductController Get Function', () => {
         expect(res.statusCode).toBe(200);
         expect(res._isEndCalled).toBeTruthy();
     });
+
     it('should return json in response.body', async () => {
         productModel.find.mockReturnValue(allProducts);
         req.body = allProducts;
         await productController.getProducts(req, res, next);
         expect(res._getJSONData()).toStrictEqual(allProducts);
     });
+
     it('should handle errors', async () => {
         const errorMessage = { message: 'Error: finding product data' };
         const rejectedPromise = Promise.reject(errorMessage);
         productModel.find.mockReturnValue(rejectedPromise);
         await productController.getProducts(req, res, next);
+        expect(next).toBeCalledWith(errorMessage);
+    });
+});
+
+describe('ProductController.getProductById Function', () => {
+    it('ProductController should have getProductById function', () => {
+        expect(typeof productController.getProductById).toBe('function');
+    });
+
+    it('should call Product.findById', async () => {
+        req.params.productId = productId;
+        await productController.getProductById(req, res, next);
+        expect(productModel.findById).toBeCalledWith(productId);
+    });
+
+    it('should return json in response.body', async () => {
+        productModel.findById.mockReturnValue(newProduct);
+        await productController.getProductById(req, res, next);
+        expect(res._getJSONData()).toStrictEqual(newProduct);
+    });
+
+    it(`should return 404 status code when item doesn't exist`, async () => {
+        productModel.findById.mockReturnValue(null);
+        await productController.getProductById(req, res, next);
+        expect(res.statusCode).toBe(404);
+        expect(res._isEndCalled).toBeTruthy();
+    });
+
+    it('should handle errors', async () => {
+        const errorMessage = { message: 'error' };
+        const rejectedPromise = Promise.reject(errorMessage);
+        productModel.findById.mockReturnValue(rejectedPromise);
+        await productController.getProductById(req, res, next);
         expect(next).toBeCalledWith(errorMessage);
     });
 });

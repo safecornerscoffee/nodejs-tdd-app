@@ -18,4 +18,18 @@ const getProducts = async (req, res, next) => {
     }
 };
 
-module.exports = { createProduct, getProducts };
+const getProductById = async (req, res, next) => {
+    try {
+        const productId = req.params.productId;
+        const product = await productModel.findById(productId);
+        if (product) {
+            res.status(200).json(product);
+        } else {
+            res.status(404).send();
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { createProduct, getProducts, getProductById };
