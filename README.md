@@ -44,6 +44,12 @@ const Blog = mongoose.model('Blog', blogSchema);
 ```
 The first argument is the singular name of the collection your model is for. Mongoose automatically looks for the plural, lowercased version of your model name. Thus, for the example above, the model `Blog` is for the `blogs` collection in the database.
 
+- [Model.create()](https://mongoosejs.com/docs/api/model.html#model_Model.create)
+- [Model.find()](https://mongoosejs.com/docs/api/model.html#model_Model.find)
+- [Model.findById()](https://mongoosejs.com/docs/api/model.html#model_Model.findById)
+- [Model.findByIdAndUpdate()](https://mongoosejs.com/docs/api/model.html#model_Model.findByIdAndUpdate)
+- [Model.findByIdAndDelete()](https://mongoosejs.com/docs/api/model.html#model_Model.findByIdAndDelete)
+
 ## Jest
 ### describe(name, fn)
 ### it(name, fn, timeout)
