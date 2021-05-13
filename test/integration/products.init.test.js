@@ -54,3 +54,19 @@ it('GET /api/products/:productId return 404 status code when item doesnt exist',
     );
     expect(response.statusCode).toBe(404);
 });
+
+it('PUT /api/products/:productId return 202 status code', async () => {
+    const response = await request(app)
+        .put(`/api/products/${firstProduct._id}`)
+        .send({ name: 'super-test' });
+    expect(response.statusCode).toBe(200);
+    expect(response.body._id).toBe(firstProduct._id);
+    expect(response.body.name).toBe('super-test');
+});
+it('PUT /api/products/:productId return 404 status code when item doesnt exist', async () => {
+    const nonExistingProductID = '609bd3e1ac16bfc29c4b203c';
+    const response = await request(app)
+        .put(`/api/products/${nonExistingProductID}`)
+        .send({ name: `i'm not exist` });
+    expect(response.statusCode).toBe(404);
+});
