@@ -7,6 +7,7 @@ const allProducts = require('../data/all-products.json');
 productModel.create = jest.fn();
 productModel.find = jest.fn();
 productModel.findById = jest.fn();
+productModel.findByIdAndDelete = jest.fn();
 
 const productId = 'asdf';
 let req, res, next;
@@ -115,5 +116,31 @@ describe('ProductController.getProductById Function', () => {
         productModel.findById.mockReturnValue(rejectedPromise);
         await productController.getProductById(req, res, next);
         expect(next).toBeCalledWith(errorMessage);
+    });
+});
+
+describe('ProductController.deleteProduct Function', () => {
+    it('ProductController should have deleteProduct function', () => {
+        expect(typeof productController.deleteProduct).toBe('function');
+    });
+
+    it('should call Product.findByIDAndDelete function', async () => {
+        req.params.productId = productId;
+        await productController.deleteProduct(req, res, next);
+        expect(productModel.findByIdAndDelete).toBeCalledWith(productId);
+    });
+
+    it('should return 204 status code', async () => {
+        productModel.findByIdAndDelete.mockReturnValue(newProduct);
+        await productController.deleteProduct(req, res, next);
+        expect(res.statusCode).toBe(204);
+        expect(res._isEndCalled).toBeTruthy();
+    });
+
+    it(`should return 404 status code when item doesn't exist`, async () => {
+        productModel.findByIdAndDelete.mockReturnValue(null);
+        await productController.deleteProduct(req, res, next);
+        expect(res.statusCode).toBe(404);
+        expect(res._isEndCalled).toBeTruthy();
     });
 });

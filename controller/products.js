@@ -32,4 +32,15 @@ const getProductById = async (req, res, next) => {
     }
 };
 
-module.exports = { createProduct, getProducts, getProductById };
+const deleteProduct = async (req, res, next) => {
+    const productId = req.params.productId;
+    const result = await productModel.findByIdAndDelete(productId);
+
+    if (result) {
+        res.status(204).send();
+    } else {
+        res.status(404).send();
+    }
+};
+
+module.exports = { createProduct, getProducts, getProductById, deleteProduct };
