@@ -33,14 +33,22 @@ const getProductById = async (req, res, next) => {
 };
 
 const updateProduct = async (req, res, next) => {
-    const productId = req.params.productId;
-    const product = req.body;
-    const updatedProduct = await productModel.findByIdAndUpdate(
-        productId,
-        product,
-        { new: true }
-    );
-    res.status(200).json(updatedProduct);
+    try {
+        const productId = req.params.productId;
+        const product = req.body;
+        const updatedProduct = await productModel.findByIdAndUpdate(
+            productId,
+            product,
+            { new: true }
+        );
+        if (updatedProduct) {
+            res.status(200).json(updatedProduct);
+        } else {
+            res.status(404).send();
+        }
+    } catch (error) {
+        next(error);
+    }
 };
 
 module.exports = { createProduct, getProducts, getProductById, updateProduct };

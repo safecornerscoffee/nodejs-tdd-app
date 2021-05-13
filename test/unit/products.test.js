@@ -145,4 +145,18 @@ describe('ProductController.updateProduct Function', () => {
         expect(res._getJSONData()).toStrictEqual(newProduct);
     });
 
+    it('should return 404 status code', async () => {
+        productModel.findByIdAndUpdate.mockReturnValue(null);
+        await productController.updateProduct(req, res, next);
+        expect(res.statusCode).toBe(404);
+        expect(res._isEndCalled).toBeTruthy();
+    });
+
+    it('should return 500 status code', async () => {
+        const errorMessage = { message: 'error' };
+        const rejectedPromise = Promise.reject(errorMessage);
+        productModel.findByIdAndUpdate.mockReturnValue(rejectedPromise);
+        await productController.updateProduct(req, res, next);
+        expect(next).toHaveBeenCalledWith(errorMessage);
+    });
 });
