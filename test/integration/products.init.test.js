@@ -35,3 +35,9 @@ it('GET /api/products', async () => {
     expect(response.body[0].name).toBeDefined();
     expect(response.body[0].description).toBeDefined();
 });
+
+it('GET /api/products/:id', async () => {
+    const productId = 123;
+    const response = await request(app).get(`/api/products/${productId}`);
+    expect(response.statusCode).toBe(200);
+});
