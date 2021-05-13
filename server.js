@@ -9,6 +9,7 @@ mongoose
     .connect('mongodb://coffee:coffee@localhost:27017/coffee', {
         useNewUrlParser: true,
         useUnifiedTopology: true,
+        useCreateIndex: true,
         authSource: 'admin',
     })
     .then(() => console.log(`MongoDB Connected`))
@@ -19,7 +20,7 @@ app.use(express.json());
 app.use('/api/products', productRoutes);
 
 app.get('/', (req, res) => {
-    res.send('Hello World');
+    res.send('Index Page');
 });
 
 app.listen(PORT);
