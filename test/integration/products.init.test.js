@@ -40,9 +40,9 @@ it('GET /api/products', async () => {
 });
 
 it('GET /api/products/:productId', async () => {
-    const response = await request(app).get(
-        `/api/products/${firstProduct._id}`
-    );
+    const response = await request(app)
+        .get(`/api/products/${firstProduct._id}`)
+        .send();
     expect(response.statusCode).toBe(200);
     expect(response.body.name).toBe(firstProduct.name);
     expect(response.body.description).toBe(firstProduct.description);
@@ -52,5 +52,19 @@ it('GET /api/products/:productId return 404 status code when item doesnt exist',
     const response = await request(app).get(
         `/api/products/609bd4e1ac76bfc29c2b103b`
     );
+    expect(response.statusCode).toBe(404);
+});
+
+it('DELETE /api/products/:productId return 200', async () => {
+    const response = await request(app)
+        .delete(`/api/products/${firstProduct._id}`)
+        .send();
+    expect(response.statusCode).toBe(200);
+});
+
+it('DELETE /api/products/:productId return 404', async () => {
+    const response = await request(app)
+        .delete(`/api/products/${firstProduct._id}`)
+        .send();
     expect(response.statusCode).toBe(404);
 });

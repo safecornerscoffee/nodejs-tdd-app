@@ -33,13 +33,16 @@ const getProductById = async (req, res, next) => {
 };
 
 const deleteProduct = async (req, res, next) => {
-    const productId = req.params.productId;
-    const result = await productModel.findByIdAndDelete(productId);
-
-    if (result) {
-        res.status(204).send();
-    } else {
-        res.status(404).send();
+    try {
+        const productId = req.params.productId;
+        const deleteProduct = await productModel.findByIdAndDelete(productId);
+        if (deleteProduct) {
+            res.status(200).json(deleteProduct);
+        } else {
+            res.status(404).send();
+        }
+    } catch (error) {
+        next(error);
     }
 };
 

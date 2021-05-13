@@ -130,10 +130,11 @@ describe('ProductController.deleteProduct Function', () => {
         expect(productModel.findByIdAndDelete).toBeCalledWith(productId);
     });
 
-    it('should return 204 status code', async () => {
+    it('should return 200 status code', async () => {
         productModel.findByIdAndDelete.mockReturnValue(newProduct);
         await productController.deleteProduct(req, res, next);
-        expect(res.statusCode).toBe(204);
+        expect(res.statusCode).toBe(200);
+        expect(res._getJSONData()).toStrictEqual(newProduct);
         expect(res._isEndCalled).toBeTruthy();
     });
 
@@ -142,5 +143,13 @@ describe('ProductController.deleteProduct Function', () => {
         await productController.deleteProduct(req, res, next);
         expect(res.statusCode).toBe(404);
         expect(res._isEndCalled).toBeTruthy();
+    });
+
+    it('should handle errors', async () => {
+        const errorMessage = { message: 'error' };
+        const rejectedPromise = Promise.reject(errorMessage);
+        productModel.findByIdAndDelete.mockReturnValue(rejectedPromise);
+        await productController.deleteProduct(req, res, next);
+        expect(next).toHaveBeenCalledWith(errorMessage);
     });
 });
