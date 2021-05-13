@@ -9,4 +9,9 @@ const createProduct = async (req, res, next) => {
     }
 };
 
-module.exports = { createProduct };
+const getProducts = async (req, res, next) => {
+    await productModel.find({});
+    res.status(200);
+};
+
+module.exports = { createProduct, getProducts };
