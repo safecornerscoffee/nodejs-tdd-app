@@ -10,8 +10,8 @@ const createProduct = async (req, res, next) => {
 };
 
 const getProducts = async (req, res, next) => {
-    await productModel.find({});
-    res.status(200);
+    const allProducts = await productModel.find({});
+    res.status(200).json(allProducts);
 };
 
 module.exports = { createProduct, getProducts };
