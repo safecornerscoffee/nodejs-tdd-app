@@ -4,6 +4,8 @@ const app = require('../../server');
 const newProductData = require('../data/new-product.json');
 const allProductsData = require('../data/all-products.json');
 
+let firstProduct;
+
 it('POST /api/products', async () => {
     const response = await request(app)
         .post('/api/products')
@@ -34,10 +36,21 @@ it('GET /api/products', async () => {
     expect(Array.isArray(response.body)).toBeTruthy();
     expect(response.body[0].name).toBeDefined();
     expect(response.body[0].description).toBeDefined();
+    firstProduct = response.body[0];
 });
 
-it('GET /api/products/:id', async () => {
-    const productId = 123;
-    const response = await request(app).get(`/api/products/${productId}`);
+it('GET /api/products/:productId', async () => {
+    const response = await request(app).get(
+        `/api/products/${firstProduct._id}`
+    );
     expect(response.statusCode).toBe(200);
+    expect(response.body.name).toBe(firstProduct.name);
+    expect(response.body.description).toBe(firstProduct.description);
+});
+
+it('GET /api/products/:productId return 404 status code when item doesnt exist', async () => {
+    const response = await request(app).get(
+        `/api/products/609bd4e1ac76bfc29c2b103b`
+    );
+    expect(response.statusCode).toBe(404);
 });
