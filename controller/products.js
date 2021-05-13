@@ -10,8 +10,12 @@ const createProduct = async (req, res, next) => {
 };
 
 const getProducts = async (req, res, next) => {
-    const allProducts = await productModel.find({});
-    res.status(200).json(allProducts);
+    try {
+        const allProducts = await productModel.find({});
+        res.status(200).json(allProducts);
+    } catch (error) {
+        next(error);
+    }
 };
 
 module.exports = { createProduct, getProducts };
