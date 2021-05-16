@@ -11,3 +11,11 @@ test('POST /api/users/signup', async () => {
     expect(response.body).toHaveProperty('id');
     expect(response.body).toHaveProperty('password');
 });
+
+test('POST /api/users/signin', async () => {
+    const response = await request(app).post('/api/users/signin').send(newUser);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty('id');
+    expect(response.body).toHaveProperty('email');
+});

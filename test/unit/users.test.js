@@ -5,7 +5,7 @@ const httpMocks = require('node-mocks-http');
 let req, res, next;
 beforeEach(() => {
     userModel.create = jest.fn();
-    userModel.get;
+    userModel.findOne = jest.fn();
     req = httpMocks.createRequest();
     res = httpMocks.createResponse();
     next = jest.fn();
@@ -36,13 +36,11 @@ describe('UserController.signUp function', () => {
     });
 
     it('should have call User.create', async () => {
-        req.body = newUser;
         await userController.signUp(req, res, next);
         expect(userModel.create).toBeCalled();
     });
 
     it('should return 201 status code and json in response when user created', async () => {
-        req.body = newUser;
         userModel.create.mockReturnValue(newUser);
         await userController.signUp(req, res, next);
         expect(res.statusCode).toBe(201);
@@ -88,7 +86,52 @@ describe('UserController.signUp function', () => {
 });
 
 describe('UserController.signIn function', () => {
+    beforeEach(() => {
+        req.body = JSON.parse(JSON.stringify(newUser));
+    });
     it('should be a function', () => {
         expect(typeof userController.signIn).toBe('function');
+    });
+
+    it('should call userModel.find', async () => {
+        await userController.signIn(req, res, next);
+        expect(userModel.findOne).toBeCalledWith({ email: req.body.email });
+    });
+
+    it('should return 200 status code for valid credentials', async () => {
+        let expectedResponse = {
+            _id: '60a14fb8afda8919590e2653',
+            email: 'coffee@safecornerscoffe.com',
+            password:
+                '$2b$10$gCn7rKW7TWN7lN9ez1KQJeg4qWcLpNXFve/kB9JpAn3q12DWH5VM6',
+            id: '60a14fb8afda8919590e2652',
+            __v: 0,
+        };
+        userModel.findOne.mockReturnValue(expectedResponse);
+        await userController.signIn(req, res, next);
+        expect(res.statusCode).toBe(200);
+    });
+
+    it('should return 401 when invalid credentials', async () => {
+        req.body.password = 'wrong-password';
+        let expectedResponse = {
+            _id: '60a14fb8afda8919590e2653',
+            email: 'coffee@safecornerscoffe.com',
+            password:
+                '$2b$10$gCn7rKW7TWN7lN9ez1KQJeg4qWcLpNXFve/kB9JpAn3q12DWH5VM6',
+            id: '60a14fb8afda8919590e2652',
+            __v: 0,
+        };
+        userModel.findOne.mockReturnValue(expectedResponse);
+        await userController.signIn(req, res, next);
+        expect(res.statusCode).toBe(401);
+    });
+
+    it('should handle errors', async () => {
+        const errorMessage = { message: 'internal error' };
+        const rejectedPromise = Promise.reject(errorMessage);
+        userModel.findOne.mockReturnValue(rejectedPromise);
+        await userController.signIn(req, res, next);
+        expect(next).toHaveBeenCalledWith(errorMessage);
     });
 });

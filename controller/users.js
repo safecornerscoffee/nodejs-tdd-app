@@ -29,9 +29,26 @@ const hashAndSaltPassword = async (password) => {
     return await bcrypt.hash(password, defaultCost);
 };
 
+const signIn = async (req, res, next) => {
+    try {
+        let email = req.body.email;
+        let password = req.body.password;
+
+        let user = await userModel.findOne({ email: email });
+
+        let match = await comparePassword(password, user.password);
+        if (match) {
+            res.status(200).json(user);
+        } else {
+            res.status(401).json({ message: 'invalid email or password' });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
 const comparePassword = async (password, hashedPassword) => {
     return await bcrypt.compare(password, hashedPassword);
 };
 
-const signIn = async () => {};
 module.exports = { signUp, signIn };
