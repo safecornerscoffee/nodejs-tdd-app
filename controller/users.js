@@ -4,23 +4,21 @@ const bcrypt = require('bcrypt');
 const defaultCost = 10;
 
 const signUp = async (req, res, next) => {
-    const newUser = req.body;
-
-    newUser.id = new mongoose.Types.ObjectId();
-
-    if (newUser.email === '' || newUser.password === '') {
-        res.status(400).json({ message: 'invalid email or password' });
-        return;
-    }
-
-    hashAndSaltPassword(newUser.password)
-        .then((password) => (newUser.password = password))
-        .catch((error) => next(error));
-
     try {
-        let createdUser = await userModel.create(newUser);
+        const newUser = req.body;
 
+        newUser.id = new mongoose.Types.ObjectId();
+
+        if (newUser.email === '' || newUser.password === '') {
+            res.status(400).json({ message: 'invalid email or password' });
+            return;
+        }
+
+        newUser.password = await hashAndSaltPassword(newUser.password);
+
+        let createdUser = await userModel.create(newUser);
         createdUser.id = createdUser.id.toString();
+
         res.status(201).json(createdUser);
     } catch (error) {
         next(error);
