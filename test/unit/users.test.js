@@ -2,10 +2,10 @@ const userModel = require('../../models/User');
 const userController = require('../../controller/users');
 const httpMocks = require('node-mocks-http');
 
-userModel.create = jest.fn();
-
 let req, res, next;
 beforeEach(() => {
+    userModel.create = jest.fn();
+
     req = httpMocks.createRequest();
     res = httpMocks.createResponse();
     next = jest.fn();
@@ -27,28 +27,27 @@ let invalidPasswordUser = {
 };
 
 describe('UserController.signUp function', () => {
+    beforeEach(() => {
+        req.body = JSON.parse(JSON.stringify(newUser));
+    });
+
     it('should be a function', () => {
         expect(typeof userController.signUp).toBe('function');
     });
 
-    it('should have call User.create', () => {
-        req.body = newUser;
-        userController.signUp(req, res, next);
-        expect(userModel.create).toBeCalledWith(newUser);
-    });
-
-    it('should return 201 status code when user created', async () => {
+    it('should have call User.create', async () => {
         req.body = newUser;
         await userController.signUp(req, res, next);
-        expect(res.statusCode).toBe(201);
-        expect(res._isEndCalled()).toBeTruthy();
+        expect(userModel.create).toBeCalled();
     });
 
-    it('should return json in response when user created', async () => {
+    it('should return 201 status code and json in response when user created', async () => {
         req.body = newUser;
         userModel.create.mockReturnValue(newUser);
         await userController.signUp(req, res, next);
+        expect(res.statusCode).toBe(201);
         expect(res._getJSONData()).toStrictEqual(newUser);
+        expect(res._isEndCalled).toBeTruthy();
     });
 
     it('should return 400 status code for invalid email or password', async () => {
@@ -69,12 +68,22 @@ describe('UserController.signUp function', () => {
         expect(res._isEndCalled()).toBeTruthy();
     });
 
+    it('should hash password using bcrypt', async () => {
+        let hashedPassword;
+        userModel.create = jest.fn((x) => {
+            hashedPassword = x.password;
+            return x;
+        });
+        await userController.signUp(req, res, next);
+        expect(res._getJSONData().password).toBe(hashedPassword);
+    });
+
     it('should handle internal error', async () => {
         const errorMessage = { message: 'internal error' };
         const rejectedPromise = Promise.reject(errorMessage);
         userModel.create.mockReturnValue(rejectedPromise);
         await userController.signUp(req, res, next);
-        expect(next).toBeCalledWith(errorMessage);
+        expect(next).toHaveBeenCalledWith(errorMessage);
     });
 });
 
