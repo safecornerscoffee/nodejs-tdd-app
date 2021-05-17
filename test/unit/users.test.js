@@ -112,6 +112,20 @@ describe('UserController.signIn function', () => {
         expect(res.statusCode).toBe(200);
     });
 
+    it('should return jwt token for valid credential', async () => {
+        let expectedResponse = {
+            _id: '60a14fb8afda8919590e2653',
+            email: 'coffee@safecornerscoffe.com',
+            password:
+                '$2b$10$gCn7rKW7TWN7lN9ez1KQJeg4qWcLpNXFve/kB9JpAn3q12DWH5VM6',
+            id: '60a14fb8afda8919590e2652',
+            __v: 0,
+        };
+        userModel.findOne.mockReturnValue(expectedResponse);
+        await userController.signIn(req, res, next);
+        expect(res.statusCode).toBe(200);
+    });
+
     it('should return 401 when invalid credentials', async () => {
         req.body.password = 'wrong-password';
         let expectedResponse = {

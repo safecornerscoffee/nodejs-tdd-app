@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const defaultCost = 10;
 
+const jwt = require('jsonwebtoken');
+const jwtSecret = 'super-secret-jwt-key';
+
 const signUp = async (req, res, next) => {
     try {
         const newUser = req.body;
@@ -38,6 +41,14 @@ const signIn = async (req, res, next) => {
 
         let match = await comparePassword(password, user.password);
         if (match) {
+            let payload = {
+                id: user.email,
+                exp: Math.floor(Date.now() / 1000) + 60 * 60 * 72,
+            };
+
+            user.token = await jwt.sign(payload, jwtSecret, {
+                algorithm: 'HS256',
+            });
             res.status(200).json(user);
         } else {
             res.status(401).json({ message: 'invalid email or password' });
